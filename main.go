@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/api"
+	"hotel.com/api/validators"
 	"hotel.com/db"
 )
 
@@ -37,6 +38,7 @@ func main() {
 	apiV1.Get("/", handleHome)
 
 	apiV1.Get("/users", userHandler.HandleGetUsers)
+	apiV1.Post("/users", validators.ValidateCreateUser, userHandler.HandleCreateUser)
 	apiV1.Get("/users/:id", userHandler.HandleGetUser)
 
 	app.Listen(*address)
