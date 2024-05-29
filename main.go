@@ -40,6 +40,7 @@ func main() {
 	apiV1.Get("/users", userHandler.HandleGetUsers)
 	apiV1.Post("/users", validators.ValidateCreateUser, userHandler.HandleCreateUser)
 	apiV1.Get("/users/:id", userHandler.HandleGetUser)
+	apiV1.Delete("/users/:id", userHandler.HandleDeleteUser)
 
 	app.Listen(*address)
 }
