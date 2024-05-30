@@ -12,6 +12,11 @@ type CreateUserParams struct {
 	Password  string `json:"password" validate:"required,min=6"`
 }
 
+type UpdateUserParams struct {
+	FirstName string `bson:"firstName" json:"first_name" validate:"required,min=2"`
+	LastName  string `bson:"lastName" json:"last_name" validate:"required,min=2"`
+}
+
 type User struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	FirstName         string             `bson:"firstName" json:"first_name"`
