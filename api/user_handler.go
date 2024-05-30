@@ -4,6 +4,8 @@ import (
 	"errors"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel.com/db"
 	"hotel.com/types"
@@ -63,6 +65,30 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(user)
+}
+
+func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
+	var (
+		update bson.M
+		userID = c.Params("id")
+	)
+
+	if err := c.BodyParser(&update); err != nil {
+		return err
+	}
+
+	oid, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": oid}
+
+	if err := h.userStore.UpdateUser(c.Context(), filter, update); err != nil {
+		return err
+	}
+
+	return c.JSON(map[string]string{"message": "user updated successfully"})
 }
 
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
