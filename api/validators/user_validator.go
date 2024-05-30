@@ -9,6 +9,8 @@ import (
 
 func ValidateCreateUser(c *fiber.Ctx) error {
 	params := new(types.CreateUserParams)
+	c.BodyParser(&params)
+
 	customValidator := &customValidator{
 		validator: validate,
 	}
