@@ -6,9 +6,9 @@ import (
 )
 
 type CreateUserParams struct {
+	Email     string `json:"email" validate:"required,min=5,email"`
 	FirstName string `json:"first_name" validate:"required,min=2"`
 	LastName  string `json:"last_name" validate:"required,min=2"`
-	Email     string `json:"email" validate:"required,min=5,email"`
 	Password  string `json:"password" validate:"required,min=6"`
 }
 
