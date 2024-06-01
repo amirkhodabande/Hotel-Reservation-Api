@@ -22,7 +22,7 @@ func ValidateCreateUser(c *fiber.Ctx) error {
 			errorMessages[err.Field] = fmt.Sprintf("%s field failed. Validation: '%s'", err.Field, err.Tag)
 		}
 
-		return c.Status(fiber.StatusBadRequest).JSON(map[string]map[string]string{
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(map[string]map[string]string{
 			"errors": errorMessages,
 		})
 	}
@@ -45,7 +45,7 @@ func ValidateUpdateUser(c *fiber.Ctx) error {
 			errorMessages[err.Field] = fmt.Sprintf("%s field failed. Validation: '%s'", err.Field, err.Tag)
 		}
 
-		return c.Status(fiber.StatusBadRequest).JSON(map[string]map[string]string{
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(map[string]map[string]string{
 			"errors": errorMessages,
 		})
 	}
