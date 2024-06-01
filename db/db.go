@@ -1,8 +1,14 @@
 package db
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"context"
 
-const DBNAME = "hotel-reservation"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Dropper interface {
+	Drop(ctx context.Context) error
+}
 
 func ToObjectID(id string) primitive.ObjectID {
 	oid, err := primitive.ObjectIDFromHex(id)

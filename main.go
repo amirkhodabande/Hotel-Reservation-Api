@@ -13,7 +13,10 @@ import (
 	"hotel.com/db"
 )
 
-const dburi = "mongodb://localhost:27017"
+const (
+	dburi  = "mongodb://localhost:27017"
+	dbname = "hotel-reservation"
+)
 
 var app = fiber.New(fiber.Config{
 	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
@@ -27,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client))
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, dbname))
 
 	address := flag.String("serverPort", ":5000", "")
 	flag.Parse()
