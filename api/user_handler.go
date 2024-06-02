@@ -47,13 +47,13 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(insertedUser)
+	return c.Status(fiber.StatusCreated).JSON(insertedUser)
 }
 
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
-	user, err := h.userStore.GetUserByID(c.Context(), id)
 
+	user, err := h.userStore.GetUserByID(c.Context(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return c.Status(404).JSON(map[string]string{"error": "not found"})

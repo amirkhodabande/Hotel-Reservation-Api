@@ -62,6 +62,7 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *types.User) (*typ
 
 func (s *MongoUserStore) GetUserByID(ctx context.Context, id string) (*types.User, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
+
 	if err != nil {
 		return nil, err
 	}
