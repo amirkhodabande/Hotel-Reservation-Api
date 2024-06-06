@@ -13,11 +13,6 @@ import (
 	"hotel.com/db"
 )
 
-const (
-	dburi  = "mongodb://localhost:27017"
-	dbname = "hotel-reservation"
-)
-
 var app = fiber.New(fiber.Config{
 	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 		return ctx.JSON(map[string]string{"error": err.Error()})
@@ -25,12 +20,12 @@ var app = fiber.New(fiber.Config{
 })
 
 func main() {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(dburi))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(db.DBuri))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, dbname))
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBname))
 
 	address := flag.String("serverPort", ":5000", "")
 	flag.Parse()
@@ -50,6 +45,5 @@ func main() {
 }
 
 func handleHome(c *fiber.Ctx) error {
-
 	return c.JSON(map[string]string{"msg": "working"})
 }
