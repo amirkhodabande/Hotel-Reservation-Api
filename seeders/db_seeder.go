@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/db"
@@ -20,10 +21,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	seedUsersTable()
+	ctx := context.Background()
+
+	seedUsersTable(ctx)
+	seedHotelsTable(ctx)
 }
 
-func seedUsersTable() {
+func seedUsersTable(ctx context.Context) {
 	fmt.Println("Seeding users table...")
 
 	userStore := db.NewMongoUserStore(client, db.DBname)
@@ -41,8 +45,41 @@ func seedUsersTable() {
 		EncryptedPassword: "testEncrypted",
 	}
 
-	userStore.InsertUser(context.Background(), user)
-	userStore.InsertUser(context.Background(), anotherUser)
+	userStore.InsertUser(ctx, user)
+	userStore.InsertUser(ctx, anotherUser)
 
 	fmt.Println("users Done!")
+}
+
+func seedHotelsTable(ctx context.Context) {
+	fmt.Println("Seeding hotels table...")
+
+	hotelStore := db.NewMongoHotelStore(client, db.DBname)
+
+	hotel, err := hotelStore.Insert(ctx, &types.Hotel{
+		Name:     "TestHotel",
+		Location: "Iran",
+		Rooms:    []primitive.ObjectID{},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	roomStore := db.NewMongoRoomStore(client, db.DBname, hotelStore)
+
+	roomStore.Insert(ctx, &types.Room{
+		Type:    types.SingleRoomType,
+		Price:   70,
+		HotelID: hotel.ID,
+	})
+	roomStore.Insert(ctx, &types.Room{
+		Type:    types.DeluxeRoomType,
+		Price:   120,
+		HotelID: hotel.ID,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("hotels Done!")
 }
