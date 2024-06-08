@@ -45,8 +45,8 @@ func seedUsersTable(ctx context.Context) {
 		EncryptedPassword: "testEncrypted",
 	}
 
-	userStore.InsertUser(ctx, user)
-	userStore.InsertUser(ctx, anotherUser)
+	userStore.Insert(ctx, user)
+	userStore.Insert(ctx, anotherUser)
 
 	fmt.Println("users Done!")
 }

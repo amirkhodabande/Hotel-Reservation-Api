@@ -36,8 +36,8 @@ func TestGetUserList(t *testing.T) {
 		LastName:          "Ltest",
 		EncryptedPassword: "testEncrypted",
 	}
-	tdb.UserStore.InsertUser(context.Background(), user)
-	tdb.UserStore.InsertUser(context.Background(), anotherUser)
+	tdb.UserStore.Insert(context.Background(), user)
+	tdb.UserStore.Insert(context.Background(), anotherUser)
 
 	req := httptest.NewRequest("GET", "/", nil)
 	req.Header.Add("Content-Type", "application-json")
@@ -163,7 +163,7 @@ func TestGetUserBy(t *testing.T) {
 		LastName:          "Ltest",
 		EncryptedPassword: "testEncrypted",
 	}
-	tdb.UserStore.InsertUser(context.Background(), user)
+	tdb.UserStore.Insert(context.Background(), user)
 
 	req := httptest.NewRequest("GET", fmt.Sprint("/", user.ID.Hex()), nil)
 	req.Header.Add("Content-Type", "application-json")
@@ -194,7 +194,7 @@ func TestUpdateUser(t *testing.T) {
 		LastName:          "Ltest",
 		EncryptedPassword: "testEncrypted",
 	}
-	tdb.UserStore.InsertUser(context.Background(), user)
+	tdb.UserStore.Insert(context.Background(), user)
 
 	updateParams := types.UpdateUserParams{
 		FirstName: "updatedName",
@@ -210,7 +210,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Error(err)
 	}
 
-	newUser, _ := tdb.UserStore.GetUserByID(context.Background(), user.ID.Hex())
+	newUser, _ := tdb.UserStore.GetByID(context.Background(), user.ID.Hex())
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.Equal(t, updateParams.FirstName, newUser.FirstName)
@@ -231,7 +231,7 @@ func TestDeleteUser(t *testing.T) {
 		LastName:          "Ltest",
 		EncryptedPassword: "testEncrypted",
 	}
-	tdb.UserStore.InsertUser(context.Background(), user)
+	tdb.UserStore.Insert(context.Background(), user)
 
 	req := httptest.NewRequest("DELETE", fmt.Sprint("/", user.ID.Hex()), nil)
 	req.Header.Add("Content-Type", "application-json")
@@ -241,7 +241,7 @@ func TestDeleteUser(t *testing.T) {
 		t.Error(err)
 	}
 
-	u, _ := tdb.UserStore.GetUserByID(context.Background(), user.ID.Hex())
+	u, _ := tdb.UserStore.GetByID(context.Background(), user.ID.Hex())
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.Empty(t, u)

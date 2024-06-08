@@ -19,6 +19,7 @@ type testdb struct {
 	db.UserStore
 }
 
+// TODO remove this and drop all with client
 func (tdb *testdb) teardown(t *testing.T) {
 	if err := tdb.UserStore.Drop(context.TODO()); err != nil {
 		t.Fatal(err)

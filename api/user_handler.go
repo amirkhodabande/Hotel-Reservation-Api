@@ -20,7 +20,7 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 }
 
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
-	users, err := h.userStore.GetUsers(c.Context())
+	users, err := h.userStore.Get(c.Context())
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	insertedUser, err := h.userStore.InsertUser(c.Context(), user)
+	insertedUser, err := h.userStore.Insert(c.Context(), user)
 
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	user, err := h.userStore.GetUserByID(c.Context(), id)
+	user, err := h.userStore.GetByID(c.Context(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return c.Status(404).JSON(map[string]string{"error": "not found"})
@@ -71,7 +71,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return err
 	}
 
-	if err := h.userStore.UpdateUserByID(c.Context(), c.Params("id"), params); err != nil {
+	if err := h.userStore.UpdateByID(c.Context(), c.Params("id"), params); err != nil {
 		return err
 	}
 
@@ -80,7 +80,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
-	err := h.userStore.DeleteUserByID(c.Context(), id)
+	err := h.userStore.DeleteByID(c.Context(), id)
 
 	if err != nil {
 		return err
