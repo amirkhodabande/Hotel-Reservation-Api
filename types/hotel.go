@@ -2,6 +2,11 @@ package types
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+type HotelQueryParams struct {
+	Name   bool `json:"rooms" validate:"nullable"`
+	Rating int  `json:"ratings" validate:"nullable"`
+}
+
 type CreateHotelParams struct {
 	Name     string               `bson:"name" json:"name" validate:"required,min=2"`
 	Location string               `bson:"location" json:"location" validate:"required,min=2"`
@@ -18,5 +23,6 @@ type Hotel struct {
 	ID       primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
 	Name     string               `bson:"name" json:"name"`
 	Location string               `bson:"location" json:"location"`
+	Rating   int                  `bson:"rating" json:"rating"`
 	Rooms    []primitive.ObjectID `bson:"rooms" json:"rooms"`
 }

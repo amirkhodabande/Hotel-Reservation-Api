@@ -12,7 +12,7 @@ import (
 const hotelColl = "hotels"
 
 type HotelStore interface {
-	Dropper
+	Get(ctx context.Context, filter bson.M) ([]*types.Hotel, error)
 	Insert(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error)
 	GetByID(ctx context.Context, id string) (*types.Hotel, error)
 	UpdateByID(ctx context.Context, id string, params types.UpdateHotelParams) error
@@ -28,6 +28,22 @@ func NewMongoHotelStore(client *mongo.Client, dbname string) *MongoHotelStore {
 		client: client,
 		coll:   client.Database(dbname).Collection(hotelColl),
 	}
+}
+
+func (s *MongoHotelStore) Get(ctx context.Context, filter bson.M) ([]*types.Hotel, error) {
+	cur, err := s.coll.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var hotels []*types.Hotel
+
+	if err := cur.All(ctx, &hotels); err != nil {
+		return []*types.Hotel{}, nil
+	}
+
+	return hotels, nil
 }
 
 func (s *MongoHotelStore) Insert(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error) {

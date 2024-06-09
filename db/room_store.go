@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel.com/types"
@@ -11,7 +12,7 @@ import (
 const roomColl = "rooms"
 
 type RoomStore interface {
-	Dropper
+	Get(ctx context.Context, filter bson.M) ([]*types.Room, error)
 	Insert(ctx context.Context, user *types.Room) (*types.Room, error)
 }
 
@@ -28,6 +29,21 @@ func NewMongoRoomStore(client *mongo.Client, dbname string, hotelStore *MongoHot
 		coll:            client.Database(dbname).Collection(roomColl),
 		MongoHotelStore: hotelStore,
 	}
+}
+
+func (s *MongoRoomStore) Get(ctx context.Context, filter bson.M) ([]*types.Room, error) {
+	cur, err := s.coll.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var rooms []*types.Room
+
+	if err := cur.All(ctx, &rooms); err != nil {
+		return []*types.Room{}, nil
+	}
+
+	return rooms, nil
 }
 
 func (s *MongoRoomStore) Insert(ctx context.Context, room *types.Room) (*types.Room, error) {

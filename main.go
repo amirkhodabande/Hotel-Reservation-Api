@@ -27,6 +27,10 @@ func main() {
 
 	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBname))
 
+	hotelStore := db.NewMongoHotelStore(client, db.DBname)
+	hotelHandler := api.NewHotelHandler(hotelStore)
+	roomHandler := api.NewRoomHandler(db.NewMongoRoomStore(client, db.DBname, hotelStore))
+
 	address := flag.String("serverPort", ":5000", "")
 	flag.Parse()
 
@@ -35,11 +39,18 @@ func main() {
 	apiV1 := app.Group("api/v1")
 	apiV1.Get("/", handleHome)
 
+	// user routes
 	apiV1.Get("/users", userHandler.HandleGetUsers)
 	apiV1.Post("/users", validators.ValidateCreateUser, userHandler.HandleCreateUser)
 	apiV1.Get("/users/:id", userHandler.HandleGetUser)
 	apiV1.Put("/users/:id", validators.ValidateUpdateUser, userHandler.HandleUpdateUser)
 	apiV1.Delete("/users/:id", userHandler.HandleDeleteUser)
+
+	// hotel routes
+	apiV1.Get("/hotels", hotelHandler.HandleGetHotels)
+
+	// room routes
+	apiV1.Get("/hotels/:id/rooms", roomHandler.HandleGetRooms)
 
 	app.Listen(*address)
 }

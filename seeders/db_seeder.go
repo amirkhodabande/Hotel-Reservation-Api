@@ -59,6 +59,7 @@ func seedHotelsTable(ctx context.Context) {
 	hotel, err := hotelStore.Insert(ctx, &types.Hotel{
 		Name:     "TestHotel",
 		Location: "Iran",
+		Rating:   3,
 		Rooms:    []primitive.ObjectID{},
 	})
 	if err != nil {
