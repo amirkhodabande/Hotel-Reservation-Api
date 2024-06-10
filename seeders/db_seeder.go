@@ -32,18 +32,18 @@ func seedUsersTable(ctx context.Context) {
 
 	userStore := db.NewMongoUserStore(client, db.DBname)
 
-	user := &types.User{
-		Email:             "test1@gmail.com",
-		FirstName:         "test1",
-		LastName:          "Ltest1",
-		EncryptedPassword: "testEncrypted",
-	}
-	anotherUser := &types.User{
-		Email:             "test2@gmail.com",
-		FirstName:         "test2",
-		LastName:          "Ltest2",
-		EncryptedPassword: "testEncrypted",
-	}
+	user, _ := types.NewUserFromParams(types.CreateUserParams{
+		Email:     "test1@gmail.com",
+		FirstName: "test1",
+		LastName:  "Ltest1",
+		Password:  "password",
+	})
+	anotherUser, _ := types.NewUserFromParams(types.CreateUserParams{
+		Email:     "test2@gmail.com",
+		FirstName: "test2",
+		LastName:  "Ltest2",
+		Password:  "password",
+	})
 
 	userStore.Insert(ctx, user)
 	userStore.Insert(ctx, anotherUser)
