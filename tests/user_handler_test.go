@@ -18,7 +18,6 @@ import (
 
 func TestGetUserList(t *testing.T) {
 	tdb := setup(t)
-	defer tdb.teardown(t)
 
 	app := fiber.New()
 	userHandler := api.NewUserHandler(tdb.UserStore)
@@ -58,7 +57,6 @@ func TestGetUserList(t *testing.T) {
 
 func TestCreateUser(t *testing.T) {
 	tdb := setup(t)
-	defer tdb.teardown(t)
 
 	app := fiber.New()
 	userHandler := api.NewUserHandler(tdb.UserStore)
@@ -92,7 +90,6 @@ func TestCreateUser(t *testing.T) {
 
 func TestCreateUserValidation(t *testing.T) {
 	tdb := setup(t)
-	defer tdb.teardown(t)
 
 	app := fiber.New()
 	userHandler := api.NewUserHandler(tdb.UserStore)
@@ -151,7 +148,6 @@ func TestCreateUserValidation(t *testing.T) {
 
 func TestGetUserBy(t *testing.T) {
 	tdb := setup(t)
-	defer tdb.teardown(t)
 
 	app := fiber.New()
 	userHandler := api.NewUserHandler(tdb.UserStore)
@@ -182,7 +178,6 @@ func TestGetUserBy(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
 	tdb := setup(t)
-	defer tdb.teardown(t)
 
 	app := fiber.New()
 	userHandler := api.NewUserHandler(tdb.UserStore)
@@ -219,7 +214,6 @@ func TestUpdateUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	tdb := setup(t)
-	defer tdb.teardown(t)
 
 	app := fiber.New()
 	userHandler := api.NewUserHandler(tdb.UserStore)

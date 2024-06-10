@@ -19,18 +19,15 @@ type testdb struct {
 	db.UserStore
 }
 
-// TODO remove this and drop all with client
-func (tdb *testdb) teardown(t *testing.T) {
-	if err := tdb.UserStore.Drop(context.TODO()); err != nil {
-		t.Fatal(err)
-	}
-}
-
 func setup(*testing.T) *testdb {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(dburi))
+	ctx := context.Background()
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dburi))
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	client.Database(dbname).Drop(ctx)
 
 	return &testdb{
 		UserStore: db.NewMongoUserStore(client, dbname),
