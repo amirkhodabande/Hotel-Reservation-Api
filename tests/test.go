@@ -17,6 +17,7 @@ const (
 
 type testdb struct {
 	db.UserStore
+	db.HotelStore
 }
 
 func setup(*testing.T) *testdb {
@@ -30,6 +31,7 @@ func setup(*testing.T) *testdb {
 	client.Database(dbname).Drop(ctx)
 
 	return &testdb{
-		UserStore: db.NewMongoUserStore(client, dbname),
+		UserStore:  db.NewMongoUserStore(client, dbname),
+		HotelStore: db.NewMongoHotelStore(client, dbname),
 	}
 }
