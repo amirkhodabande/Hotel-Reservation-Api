@@ -8,12 +8,12 @@ import (
 )
 
 type RoomHandler struct {
-	roomStore db.RoomStore
+	*db.Store
 }
 
-func NewRoomHandler(roomStore db.RoomStore) *RoomHandler {
+func NewRoomHandler(store *db.Store) *RoomHandler {
 	return &RoomHandler{
-		roomStore: roomStore,
+		store,
 	}
 }
 
@@ -24,7 +24,7 @@ func (h *RoomHandler) HandleGetRooms(c *fiber.Ctx) error {
 		return err
 	}
 
-	rooms, err := h.roomStore.Get(c.Context(), bson.M{"hotelID": hid})
+	rooms, err := h.RoomStore.Get(c.Context(), bson.M{"hotelID": hid})
 	if err != nil {
 		return err
 	}

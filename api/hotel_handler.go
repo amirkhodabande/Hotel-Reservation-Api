@@ -7,12 +7,12 @@ import (
 )
 
 type HotelHandler struct {
-	hotelStore db.HotelStore
+	*db.Store
 }
 
-func NewHotelHandler(hotelStore db.HotelStore) *HotelHandler {
+func NewHotelHandler(store *db.Store) *HotelHandler {
 	return &HotelHandler{
-		hotelStore: hotelStore,
+		store,
 	}
 }
 
@@ -22,7 +22,7 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 		return err
 	}
 
-	hotels, err := h.hotelStore.Get(c.Context(), nil)
+	hotels, err := h.HotelStore.Get(c.Context(), nil)
 	if err != nil {
 		return err
 	}

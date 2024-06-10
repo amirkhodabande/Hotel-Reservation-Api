@@ -25,16 +25,26 @@ func main() {
 		log.Fatal(err)
 	}
 
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBname))
-
-	hotelStore := db.NewMongoHotelStore(client, db.DBname)
-	hotelHandler := api.NewHotelHandler(hotelStore)
-	roomHandler := api.NewRoomHandler(db.NewMongoRoomStore(client, db.DBname, hotelStore))
+	database := db.InitDatabase(client, db.DBname)
 
 	address := flag.String("serverPort", ":5000", "")
 	flag.Parse()
 
 	app := fiber.New(app.Config())
+
+	RegisterRoutes(database, app)
+
+	app.Listen(*address)
+}
+
+func handleHome(c *fiber.Ctx) error {
+	return c.JSON(map[string]string{"msg": "working"})
+}
+
+func RegisterRoutes(database *db.Store, app *fiber.App) {
+	userHandler := api.NewUserHandler(database)
+	hotelHandler := api.NewHotelHandler(database)
+	roomHandler := api.NewRoomHandler(database)
 
 	apiV1 := app.Group("api/v1")
 	apiV1.Get("/", handleHome)
@@ -51,10 +61,4 @@ func main() {
 
 	// room routes
 	apiV1.Get("/hotels/:id/rooms", roomHandler.HandleGetRooms)
-
-	app.Listen(*address)
-}
-
-func handleHome(c *fiber.Ctx) error {
-	return c.JSON(map[string]string{"msg": "working"})
 }
