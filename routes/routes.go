@@ -1,46 +1,11 @@
-package main
+package routes
 
 import (
-	"context"
-	"flag"
-	"log"
-
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/api"
 	"hotel.com/api/validators"
 	"hotel.com/db"
-	"hotel.com/routes"
 )
-
-var app = fiber.New(fiber.Config{
-	ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-		return ctx.JSON(map[string]string{"error": err.Error()})
-	},
-})
-
-func main() {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(db.DBuri))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	database := db.InitDatabase(client, db.DBname)
-
-	address := flag.String("serverPort", ":5000", "")
-	flag.Parse()
-
-	app := fiber.New(app.Config())
-
-	routes.RegisterRoutes(database, app)
-
-	app.Listen(*address)
-}
-
-func handleHome(c *fiber.Ctx) error {
-	return c.JSON(map[string]string{"msg": "working"})
-}
 
 func RegisterRoutes(database *db.Store, app *fiber.App) {
 	userHandler := api.NewUserHandler(database)
@@ -62,4 +27,8 @@ func RegisterRoutes(database *db.Store, app *fiber.App) {
 
 	// room routes
 	apiV1.Get("/hotels/:id/rooms", roomHandler.HandleGetRooms)
+}
+
+func handleHome(c *fiber.Ctx) error {
+	return c.JSON(map[string]string{"msg": "working"})
 }

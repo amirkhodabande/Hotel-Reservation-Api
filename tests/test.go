@@ -15,12 +15,7 @@ const (
 	dbname = "test-hotel-reservation"
 )
 
-type testdb struct {
-	db.UserStore
-	db.HotelStore
-}
-
-func setup(*testing.T) *testdb {
+func setup(*testing.T) *db.Store {
 	ctx := context.Background()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dburi))
@@ -30,8 +25,5 @@ func setup(*testing.T) *testdb {
 
 	client.Database(dbname).Drop(ctx)
 
-	return &testdb{
-		UserStore:  db.NewMongoUserStore(client, dbname),
-		HotelStore: db.NewMongoHotelStore(client, dbname),
-	}
+	return db.InitDatabase(client, dbname)
 }

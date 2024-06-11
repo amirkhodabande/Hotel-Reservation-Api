@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"hotel.com/api"
+	"hotel.com/routes"
 	"hotel.com/types"
 )
 
@@ -18,8 +18,7 @@ func TestGetHotelList(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	hotelHandler := api.NewHotelHandler(tdb.HotelStore)
-	app.Get("/", hotelHandler.HandleGetHotels)
+	routes.RegisterRoutes(tdb, app)
 
 	hotel, _ := tdb.HotelStore.Insert(context.Background(), &types.Hotel{
 		Name:     "TestHotel",
@@ -28,7 +27,7 @@ func TestGetHotelList(t *testing.T) {
 		Rooms:    []primitive.ObjectID{},
 	})
 
-	req := httptest.NewRequest("GET", "/", nil)
+	req := httptest.NewRequest("GET", "/api/v1/hotels", nil)
 	req.Header.Add("Content-Type", "application-json")
 
 	res, err := app.Test(req)
@@ -40,5 +39,5 @@ func TestGetHotelList(t *testing.T) {
 	exceptedRes, _ := json.Marshal([]types.Hotel{*hotel})
 
 	assert.Equal(t, 200, res.StatusCode)
-	assert.JSONEq(t, string(encodedRes), string(exceptedRes))
+	assert.JSONEq(t, string(exceptedRes), string(encodedRes))
 }

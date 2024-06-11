@@ -11,8 +11,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-	"hotel.com/api"
-	"hotel.com/api/validators"
+	"hotel.com/routes"
 	"hotel.com/types"
 )
 
@@ -20,8 +19,7 @@ func TestGetUserList(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	userHandler := api.NewUserHandler(tdb.UserStore)
-	app.Get("/", userHandler.HandleGetUsers)
+	routes.RegisterRoutes(tdb, app)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -38,7 +36,7 @@ func TestGetUserList(t *testing.T) {
 	tdb.UserStore.Insert(context.Background(), user)
 	tdb.UserStore.Insert(context.Background(), anotherUser)
 
-	req := httptest.NewRequest("GET", "/", nil)
+	req := httptest.NewRequest("GET", "/api/v1/users", nil)
 	req.Header.Add("Content-Type", "application-json")
 
 	res, err := app.Test(req)
@@ -46,21 +44,18 @@ func TestGetUserList(t *testing.T) {
 		t.Error(err)
 	}
 
-	// TODO: search to find better way
-	bodyByte, _ := io.ReadAll(res.Body)
-	userList := []types.User{*user, *anotherUser}
-	resByte, _ := json.Marshal(userList)
+	encodedRes, _ := io.ReadAll(res.Body)
+	exceptedRes, _ := json.Marshal([]types.User{*user, *anotherUser})
 
 	assert.Equal(t, 200, res.StatusCode)
-	assert.JSONEq(t, string(resByte), string(bodyByte))
+	assert.JSONEq(t, string(exceptedRes), string(encodedRes))
 }
 
 func TestCreateUser(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	userHandler := api.NewUserHandler(tdb.UserStore)
-	app.Post("/", userHandler.HandleCreateUser)
+	routes.RegisterRoutes(tdb, app)
 
 	params := types.CreateUserParams{
 		Email:     "test@gmail.com",
@@ -70,7 +65,7 @@ func TestCreateUser(t *testing.T) {
 	}
 
 	b, _ := json.Marshal(params)
-	req := httptest.NewRequest("POST", "/", bytes.NewReader(b))
+	req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewReader(b))
 	req.Header.Add("Content-Type", "application-json")
 
 	res, err := app.Test(req)
@@ -92,8 +87,7 @@ func TestCreateUserValidation(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	userHandler := api.NewUserHandler(tdb.UserStore)
-	app.Post("/", validators.ValidateCreateUser, userHandler.HandleCreateUser)
+	routes.RegisterRoutes(tdb, app)
 
 	tests := []struct {
 		description string
@@ -137,7 +131,7 @@ func TestCreateUserValidation(t *testing.T) {
 
 	for _, test := range tests {
 		b, _ := json.Marshal(test.params)
-		req := httptest.NewRequest("POST", "/", bytes.NewReader(b))
+		req := httptest.NewRequest("POST", "/api/v1/users", bytes.NewReader(b))
 		req.Header.Add("Content-Type", "application-json")
 
 		res, _ := app.Test(req)
@@ -150,8 +144,7 @@ func TestGetUserBy(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	userHandler := api.NewUserHandler(tdb.UserStore)
-	app.Get("/:id", userHandler.HandleGetUser)
+	routes.RegisterRoutes(tdb, app)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -161,7 +154,7 @@ func TestGetUserBy(t *testing.T) {
 	}
 	tdb.UserStore.Insert(context.Background(), user)
 
-	req := httptest.NewRequest("GET", fmt.Sprint("/", user.ID.Hex()), nil)
+	req := httptest.NewRequest("GET", fmt.Sprint("/api/v1/users/", user.ID.Hex()), nil)
 	req.Header.Add("Content-Type", "application-json")
 
 	res, err := app.Test(req)
@@ -169,19 +162,18 @@ func TestGetUserBy(t *testing.T) {
 		t.Error(err)
 	}
 
-	bodyByte, _ := io.ReadAll(res.Body)
-	resByte, _ := json.Marshal(user)
+	encodedRes, _ := io.ReadAll(res.Body)
+	exceptedRes, _ := json.Marshal(user)
 
 	assert.Equal(t, 200, res.StatusCode)
-	assert.JSONEq(t, string(resByte), string(bodyByte))
+	assert.JSONEq(t, string(exceptedRes), string(encodedRes))
 }
 
 func TestUpdateUser(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	userHandler := api.NewUserHandler(tdb.UserStore)
-	app.Put("/:id", userHandler.HandleUpdateUser)
+	routes.RegisterRoutes(tdb, app)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -197,7 +189,7 @@ func TestUpdateUser(t *testing.T) {
 	}
 	b, _ := json.Marshal(updateParams)
 
-	req := httptest.NewRequest("PUT", fmt.Sprint("/", user.ID.Hex()), bytes.NewReader(b))
+	req := httptest.NewRequest("PUT", fmt.Sprint("/api/v1/users/", user.ID.Hex()), bytes.NewReader(b))
 	req.Header.Add("Content-Type", "application-json")
 
 	res, err := app.Test(req)
@@ -216,8 +208,7 @@ func TestDeleteUser(t *testing.T) {
 	tdb := setup(t)
 
 	app := fiber.New()
-	userHandler := api.NewUserHandler(tdb.UserStore)
-	app.Delete("/:id", userHandler.HandleDeleteUser)
+	routes.RegisterRoutes(tdb, app)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -227,7 +218,7 @@ func TestDeleteUser(t *testing.T) {
 	}
 	tdb.UserStore.Insert(context.Background(), user)
 
-	req := httptest.NewRequest("DELETE", fmt.Sprint("/", user.ID.Hex()), nil)
+	req := httptest.NewRequest("DELETE", fmt.Sprint("/api/v1/users/", user.ID.Hex()), nil)
 	req.Header.Add("Content-Type", "application-json")
 
 	res, err := app.Test(req)
