@@ -7,18 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"hotel.com/routes"
 	"hotel.com/types"
 )
 
 func TestGetHotelList(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, tdb := setup(t)
 
 	hotel, _ := tdb.HotelStore.Insert(context.Background(), &types.Hotel{
 		Name:     "TestHotel",

@@ -5,6 +5,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type LoginParams struct {
+	Email    string `json:"email" validate:"required,min=5,email"`
+	Password string `json:"password" validate:"required,min=6"`
+}
+
 type CreateUserParams struct {
 	Email     string `json:"email" validate:"required,min=5,email"`
 	FirstName string `json:"first_name" validate:"required,min=2"`
@@ -38,4 +43,8 @@ func NewUserFromParams(params CreateUserParams) (*User, error) {
 		Email:             params.Email,
 		EncryptedPassword: string(encpw),
 	}, nil
+}
+
+func IsValidPassword(encpw, pw string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(encpw), []byte(pw)) == nil
 }

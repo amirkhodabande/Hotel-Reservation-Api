@@ -9,17 +9,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-	"hotel.com/routes"
 	"hotel.com/types"
 )
 
 func TestGetUserList(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, tdb := setup(t)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -52,10 +47,7 @@ func TestGetUserList(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, _ := setup(t)
 
 	params := types.CreateUserParams{
 		Email:     "test@gmail.com",
@@ -84,10 +76,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateUserValidation(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, _ := setup(t)
 
 	tests := []struct {
 		description string
@@ -141,10 +130,7 @@ func TestCreateUserValidation(t *testing.T) {
 }
 
 func TestGetUserBy(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, tdb := setup(t)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -170,10 +156,7 @@ func TestGetUserBy(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, tdb := setup(t)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -205,10 +188,7 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	tdb := setup(t)
-
-	app := fiber.New()
-	routes.RegisterRoutes(tdb, app)
+	app, tdb := setup(t)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
