@@ -5,8 +5,10 @@ import (
 	"log"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"hotel.com/app"
 	"hotel.com/db"
 )
 
@@ -15,7 +17,7 @@ const (
 	dbname = "test-hotel-reservation"
 )
 
-func setup(*testing.T) *db.Store {
+func setup(*testing.T) (*fiber.App, *db.Store) {
 	ctx := context.Background()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dburi))
@@ -25,5 +27,9 @@ func setup(*testing.T) *db.Store {
 
 	client.Database(dbname).Drop(ctx)
 
-	return db.InitDatabase(client, dbname)
+	tdb := db.InitDatabase(client, dbname)
+
+	app := app.New(tdb)
+
+	return app, tdb
 }

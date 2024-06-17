@@ -3,30 +3,38 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"hotel.com/api"
+	"hotel.com/api/middlewares"
 	"hotel.com/api/validators"
 	"hotel.com/db"
 )
 
 func RegisterRoutes(database *db.Store, app *fiber.App) {
+	authHandler := api.NewAuthHandler(database)
 	userHandler := api.NewUserHandler(database)
 	hotelHandler := api.NewHotelHandler(database)
 	roomHandler := api.NewRoomHandler(database)
 
 	apiV1 := app.Group("api/v1")
+
 	apiV1.Get("/", handleHome)
 
+	// authentication
+	apiV1.Post("/login", validators.ValidateLogin, authHandler.HandleLogin)
+
 	// user routes
-	apiV1.Get("/users", userHandler.HandleGetUsers)
-	apiV1.Post("/users", validators.ValidateCreateUser, userHandler.HandleCreateUser)
-	apiV1.Get("/users/:id", userHandler.HandleGetUser)
-	apiV1.Put("/users/:id", validators.ValidateUpdateUser, userHandler.HandleUpdateUser)
-	apiV1.Delete("/users/:id", userHandler.HandleDeleteUser)
+	userRoutes := apiV1.Group("users", middlewares.Authenticate)
+	userRoutes.Get("/", userHandler.HandleGetUsers)
+	userRoutes.Post("/", validators.ValidateCreateUser, userHandler.HandleCreateUser)
+	userRoutes.Get("/:id", userHandler.HandleGetUser)
+	userRoutes.Put("/:id", validators.ValidateUpdateUser, userHandler.HandleUpdateUser)
+	userRoutes.Delete("/:id", userHandler.HandleDeleteUser)
 
 	// hotel routes
-	apiV1.Get("/hotels", hotelHandler.HandleGetHotels)
+	hotelRoutes := apiV1.Group("hotels", middlewares.Authenticate)
+	hotelRoutes.Get("/", hotelHandler.HandleGetHotels)
 
 	// room routes
-	apiV1.Get("/hotels/:id/rooms", roomHandler.HandleGetRooms)
+	hotelRoutes.Get("/:id/rooms", roomHandler.HandleGetRooms)
 }
 
 func handleHome(c *fiber.Ctx) error {
