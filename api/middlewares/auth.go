@@ -11,6 +11,7 @@ import (
 
 func Authenticate(c *fiber.Ctx) error {
 	token, ok := c.GetReqHeaders()["Authorization"]
+
 	if !ok {
 		return fmt.Errorf("unauthorized")
 	}

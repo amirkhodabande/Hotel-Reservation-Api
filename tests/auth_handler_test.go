@@ -37,6 +37,7 @@ func TestCanLoginSuccessfully(t *testing.T) {
 
 	req := httptest.NewRequest("POST", "/api/v1/login", bytes.NewReader(loginParams))
 	req.Header.Add("Content-Type", "application-json")
+	loginAs(user, req)
 
 	res, err := app.Test(req)
 	if err != nil {

@@ -22,12 +22,12 @@ func RegisterRoutes(database *db.Store, app *fiber.App) {
 	apiV1.Post("/login", validators.ValidateLogin, authHandler.HandleLogin)
 
 	// user routes
-	userRoutes := apiV1.Group("users", middlewares.Authenticate)
-	userRoutes.Get("/", userHandler.HandleGetUsers)
+	userRoutes := apiV1.Group("users")
+	userRoutes.Get("/", middlewares.Authenticate, userHandler.HandleGetUsers)
 	userRoutes.Post("/", validators.ValidateCreateUser, userHandler.HandleCreateUser)
-	userRoutes.Get("/:id", userHandler.HandleGetUser)
-	userRoutes.Put("/:id", validators.ValidateUpdateUser, userHandler.HandleUpdateUser)
-	userRoutes.Delete("/:id", userHandler.HandleDeleteUser)
+	userRoutes.Get("/:id", middlewares.Authenticate, userHandler.HandleGetUser)
+	userRoutes.Put("/:id", middlewares.Authenticate, validators.ValidateUpdateUser, userHandler.HandleUpdateUser)
+	userRoutes.Delete("/:id", middlewares.Authenticate, userHandler.HandleDeleteUser)
 
 	// hotel routes
 	hotelRoutes := apiV1.Group("hotels", middlewares.Authenticate)

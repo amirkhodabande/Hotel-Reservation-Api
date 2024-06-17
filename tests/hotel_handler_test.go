@@ -15,6 +15,13 @@ import (
 func TestGetHotelList(t *testing.T) {
 	app, tdb := setup(t)
 
+	user := &types.User{
+		Email:             "test@gmail.com",
+		FirstName:         "test",
+		LastName:          "Ltest",
+		EncryptedPassword: "testEncrypted",
+	}
+	tdb.UserStore.Insert(context.Background(), user)
 	hotel, _ := tdb.HotelStore.Insert(context.Background(), &types.Hotel{
 		Name:     "TestHotel",
 		Location: "Iran",
@@ -24,6 +31,7 @@ func TestGetHotelList(t *testing.T) {
 
 	req := httptest.NewRequest("GET", "/api/v1/hotels", nil)
 	req.Header.Add("Content-Type", "application-json")
+	loginAs(user, req)
 
 	res, err := app.Test(req)
 	if err != nil {

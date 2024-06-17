@@ -1,6 +1,10 @@
 package types
 
 import (
+	"os"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -28,6 +32,18 @@ type User struct {
 	LastName          string             `bson:"lastName" json:"last_name"`
 	Email             string             `bson:"email" json:"email"`
 	EncryptedPassword string             `bson:"encryptedPassword" json:"-"`
+}
+
+func (user *User) CreateToken() string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":      user.ID,
+		"email":   user.Email,
+		"expires": time.Now().Add(time.Hour * 4),
+	})
+	secret := os.Getenv("JWT_SECRET")
+	tokenStr, _ := token.SignedString([]byte(secret))
+
+	return tokenStr
 }
 
 func NewUserFromParams(params CreateUserParams) (*User, error) {

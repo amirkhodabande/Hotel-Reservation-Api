@@ -33,6 +33,7 @@ func TestGetUserList(t *testing.T) {
 
 	req := httptest.NewRequest("GET", "/api/v1/users", nil)
 	req.Header.Add("Content-Type", "application-json")
+	loginAs(user, req)
 
 	res, err := app.Test(req)
 	if err != nil {
@@ -142,6 +143,7 @@ func TestGetUserBy(t *testing.T) {
 
 	req := httptest.NewRequest("GET", fmt.Sprint("/api/v1/users/", user.ID.Hex()), nil)
 	req.Header.Add("Content-Type", "application-json")
+	loginAs(user, req)
 
 	res, err := app.Test(req)
 	if err != nil {
@@ -174,6 +176,7 @@ func TestUpdateUser(t *testing.T) {
 
 	req := httptest.NewRequest("PUT", fmt.Sprint("/api/v1/users/", user.ID.Hex()), bytes.NewReader(b))
 	req.Header.Add("Content-Type", "application-json")
+	loginAs(user, req)
 
 	res, err := app.Test(req)
 	if err != nil {
@@ -200,6 +203,7 @@ func TestDeleteUser(t *testing.T) {
 
 	req := httptest.NewRequest("DELETE", fmt.Sprint("/api/v1/users/", user.ID.Hex()), nil)
 	req.Header.Add("Content-Type", "application-json")
+	loginAs(user, req)
 
 	res, err := app.Test(req)
 	if err != nil {

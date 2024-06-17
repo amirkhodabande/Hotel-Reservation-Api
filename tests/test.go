@@ -3,13 +3,16 @@ package tests
 import (
 	"context"
 	"log"
+	"net/http"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/app"
 	"hotel.com/db"
+	"hotel.com/types"
 )
 
 const (
@@ -18,6 +21,11 @@ const (
 )
 
 func setup(*testing.T) (*fiber.App, *db.Store) {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
 	ctx := context.Background()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dburi))
@@ -32,4 +40,9 @@ func setup(*testing.T) (*fiber.App, *db.Store) {
 	app := app.New(tdb)
 
 	return app, tdb
+}
+
+func loginAs(user *types.User, req *http.Request) {
+	token := user.CreateToken()
+	req.Header.Add("Authorization", token)
 }

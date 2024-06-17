@@ -3,11 +3,8 @@ package api
 import (
 	"errors"
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel.com/db"
 	"hotel.com/types"
@@ -43,14 +40,7 @@ func (h *AuthHandler) HandleLogin(c *fiber.Ctx) error {
 		return fmt.Errorf("invalid credentials")
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":      user.ID,
-		"email":   user.Email,
-		"expires": time.Now().Add(time.Hour * 4),
-	})
-	secret := os.Getenv("JWT_SECRET")
-	fmt.Println(secret)
-	tokenStr, _ := token.SignedString([]byte("secret"))
+	tokenStr := user.CreateToken()
 
 	return c.JSON(map[string]any{
 		"user":  user,
