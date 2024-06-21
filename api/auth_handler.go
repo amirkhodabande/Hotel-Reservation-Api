@@ -35,8 +35,6 @@ func (h *AuthHandler) HandleLogin(c *fiber.Ctx) error {
 	}
 
 	if !types.IsValidPassword(user.EncryptedPassword, data.Password) {
-		fmt.Println("p")
-
 		return fmt.Errorf("invalid credentials")
 	}
 
