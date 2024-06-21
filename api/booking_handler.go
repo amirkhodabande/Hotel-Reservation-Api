@@ -1,0 +1,74 @@
+package api
+
+import (
+	"errors"
+	"net/http"
+
+	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"hotel.com/db"
+	"hotel.com/types"
+)
+
+type BookingHandler struct {
+	*db.Store
+}
+
+func NewBookingHandler(store *db.Store) *BookingHandler {
+	return &BookingHandler{
+		store,
+	}
+}
+
+func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
+	var data types.BookRoomParams
+	if err := c.BodyParser(&data); err != nil {
+		return err
+	}
+
+	rid, err := primitive.ObjectIDFromHex(c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	user, ok := c.Context().UserValue("user").(*types.User)
+	if !ok {
+		return errors.New("something went wrong")
+	}
+
+	filter := bson.M{
+		"roomID": rid,
+		"from": bson.M{
+			"$gte": data.From,
+		},
+		"till": bson.M{
+			"$lte": data.Till,
+		},
+	}
+	bookings, err := h.BookingStore.Get(c.Context(), filter)
+	if err != nil {
+		return err
+	}
+
+	if len(bookings) > 0 {
+		return c.Status(http.StatusBadRequest).JSON(map[string]any{
+			"error": "This room is already booked at the chosen time",
+		})
+	}
+
+	booking := &types.Booking{
+		UserID:     user.ID,
+		RoomID:     rid,
+		From:       data.From,
+		Till:       data.Till,
+		NumPersons: data.NumPersons,
+	}
+
+	res, err := h.BookingStore.Insert(c.Context(), booking)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(res)
+}
