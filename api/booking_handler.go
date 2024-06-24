@@ -21,6 +21,23 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
+	user, ok := c.Context().UserValue("user").(*types.User)
+	if !ok {
+		return errors.New("something went wrong")
+	}
+
+	filter := bson.M{
+		"userID": user.ID,
+	}
+	bookings, err := h.BookingStore.Get(c.Context(), filter)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(bookings)
+}
+
 func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	var data types.BookRoomParams
 	if err := c.BodyParser(&data); err != nil {

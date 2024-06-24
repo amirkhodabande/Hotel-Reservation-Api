@@ -38,7 +38,9 @@ func RegisterRoutes(database *db.Store, app *fiber.App) {
 	hotelRoutes.Get("/:id/rooms", roomHandler.HandleGetRooms)
 
 	// booking routes
+	bookingRoutes := apiV1.Group("/bookings", middlewares.Authenticate(database))
 	hotelRoutes.Post("/:id/rooms", validators.ValidateBookingRoom, bookingHandler.HandleBookRoom)
+	bookingRoutes.Get("/", bookingHandler.HandleGetBookings)
 }
 
 func handleHome(c *fiber.Ctx) error {
