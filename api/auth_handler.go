@@ -21,12 +21,9 @@ func NewAuthHandler(store *db.Store) *AuthHandler {
 }
 
 func (h *AuthHandler) HandleLogin(c *fiber.Ctx) error {
-	var data types.LoginParams
-	if err := c.BodyParser(&data); err != nil {
-		return err
-	}
+	params := c.Context().UserValue("params").(*types.LoginParams)
 
-	user, err := h.UserStore.GetByEmail(c.Context(), data.Email)
+	user, err := h.UserStore.GetByEmail(c.Context(), params.Email)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fmt.Errorf("invalid credentials")
@@ -34,7 +31,7 @@ func (h *AuthHandler) HandleLogin(c *fiber.Ctx) error {
 		return err
 	}
 
-	if !types.IsValidPassword(user.EncryptedPassword, data.Password) {
+	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
 		return fmt.Errorf("invalid credentials")
 	}
 

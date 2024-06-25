@@ -26,6 +26,7 @@ func ValidateLogin(c *fiber.Ctx) error {
 			"errors": errorMessages,
 		})
 	}
+	c.Context().SetUserValue("params", params)
 
 	return c.Next()
 }

@@ -15,13 +15,13 @@ import (
 func TestCanLoginSuccessfully(t *testing.T) {
 	app, tdb := setup(t)
 
-	user, _ := types.NewUserFromParams(types.CreateUserParams{
+	user, _ := types.NewUserFromParams(&types.CreateUserParams{
 		Email:     "test1@gmail.com",
 		FirstName: "test1",
 		LastName:  "Ltest1",
 		Password:  "password",
 	})
-	anotherUser, _ := types.NewUserFromParams(types.CreateUserParams{
+	anotherUser, _ := types.NewUserFromParams(&types.CreateUserParams{
 		Email:     "test2@gmail.com",
 		FirstName: "test2",
 		LastName:  "Ltest2",
@@ -55,7 +55,7 @@ func TestCanLoginSuccessfully(t *testing.T) {
 func TestCannotLoginWithWrongCredentials(t *testing.T) {
 	app, tdb := setup(t)
 
-	user, _ := types.NewUserFromParams(types.CreateUserParams{
+	user, _ := types.NewUserFromParams(&types.CreateUserParams{
 		Email:     "test1@gmail.com",
 		FirstName: "test1",
 		LastName:  "Ltest1",

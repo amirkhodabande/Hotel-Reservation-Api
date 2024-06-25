@@ -39,10 +39,7 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 }
 
 func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
-	var data types.BookRoomParams
-	if err := c.BodyParser(&data); err != nil {
-		return err
-	}
+	params := c.Context().UserValue("params").(*types.BookRoomParams)
 
 	rid, err := primitive.ObjectIDFromHex(c.Params("id"))
 	if err != nil {
@@ -57,10 +54,10 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	filter := bson.M{
 		"roomID": rid,
 		"from": bson.M{
-			"$gte": data.From,
+			"$gte": params.From,
 		},
 		"till": bson.M{
-			"$lte": data.Till,
+			"$lte": params.Till,
 		},
 	}
 	bookings, err := h.BookingStore.Get(c.Context(), filter)
@@ -77,9 +74,9 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	booking := &types.Booking{
 		UserID:     user.ID,
 		RoomID:     rid,
-		From:       data.From,
-		Till:       data.Till,
-		NumPersons: data.NumPersons,
+		From:       params.From,
+		Till:       params.Till,
+		NumPersons: params.NumPersons,
 	}
 
 	res, err := h.BookingStore.Insert(c.Context(), booking)

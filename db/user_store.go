@@ -16,7 +16,7 @@ type UserStore interface {
 	Insert(ctx context.Context, user *types.User) (*types.User, error)
 	GetByID(ctx context.Context, id string) (*types.User, error)
 	GetByEmail(ctx context.Context, email string) (*types.User, error)
-	UpdateByID(ctx context.Context, id string, params types.UpdateUserParams) error
+	UpdateByID(ctx context.Context, id string, params *types.UpdateUserParams) error
 	DeleteByID(ctx context.Context, id string) error
 }
 
@@ -85,7 +85,7 @@ func (s *MongoUserStore) GetByEmail(ctx context.Context, email string) (*types.U
 	return &user, nil
 }
 
-func (s *MongoUserStore) UpdateByID(ctx context.Context, id string, params types.UpdateUserParams) error {
+func (s *MongoUserStore) UpdateByID(ctx context.Context, id string, params *types.UpdateUserParams) error {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return err

@@ -46,7 +46,7 @@ func (user *User) CreateToken() string {
 	return tokenStr
 }
 
-func NewUserFromParams(params CreateUserParams) (*User, error) {
+func NewUserFromParams(params *CreateUserParams) (*User, error) {
 	encpw, err := bcrypt.GenerateFromPassword([]byte(params.Password), bcrypt.MinCost)
 
 	if err != nil {

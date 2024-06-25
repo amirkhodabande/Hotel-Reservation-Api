@@ -29,11 +29,7 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
-	var params types.CreateUserParams
-
-	if err := c.BodyParser(&params); err != nil {
-		return err
-	}
+	params := c.Context().UserValue("params").(*types.CreateUserParams)
 
 	user, err := types.NewUserFromParams(params)
 
@@ -66,10 +62,7 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
-	var params types.UpdateUserParams
-	if err := c.BodyParser(&params); err != nil {
-		return err
-	}
+	params := c.Context().UserValue("params").(*types.UpdateUserParams)
 
 	if err := h.UserStore.UpdateByID(c.Context(), c.Params("id"), params); err != nil {
 		return err

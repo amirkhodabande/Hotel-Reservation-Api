@@ -27,6 +27,8 @@ func ValidateCreateUser(c *fiber.Ctx) error {
 		})
 	}
 
+	c.Context().SetUserValue("params", params)
+
 	return c.Next()
 }
 
@@ -49,6 +51,8 @@ func ValidateUpdateUser(c *fiber.Ctx) error {
 			"errors": errorMessages,
 		})
 	}
+
+	c.Context().SetUserValue("params", params)
 
 	return c.Next()
 }

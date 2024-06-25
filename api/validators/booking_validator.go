@@ -31,6 +31,8 @@ func ValidateBookingRoom(c *fiber.Ctx) error {
 		})
 	}
 
+	c.Context().SetUserValue("params", params)
+	
 	return c.Next()
 }
 
