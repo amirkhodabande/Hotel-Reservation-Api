@@ -12,11 +12,16 @@ type BookRoomParams struct {
 	NumPersons int       `bson:"numPersons" json:"num_persons" validate:"required"`
 }
 
+type UpdateBookingParams struct {
+	Canceled bool `bson:"canceled" json:"canceled" validate:"required"`
+}
+
 type Booking struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	UserID     primitive.ObjectID `bson:"userID" json:"user_id,omitempty"`
 	RoomID     primitive.ObjectID `bson:"roomID" json:"room_id,omitempty"`
 	NumPersons int                `bson:"numPersons" json:"num_persons"`
-	From       time.Time          `bson:"from,omitempty" json:"from"`
-	Till       time.Time          `bson:"till,omitempty" json:"till"`
+	From       time.Time          `bson:"from" json:"from"`
+	Till       time.Time          `bson:"till" json:"till"`
+	Canceled   bool               `bson:"canceled" json:"canceled"`
 }

@@ -21,23 +21,6 @@ func NewBookingHandler(store *db.Store) *BookingHandler {
 	}
 }
 
-func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
-	user, ok := c.Context().UserValue("user").(*types.User)
-	if !ok {
-		return errors.New("something went wrong")
-	}
-
-	filter := bson.M{
-		"userID": user.ID,
-	}
-	bookings, err := h.BookingStore.Get(c.Context(), filter)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(bookings)
-}
-
 func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	params := c.Context().UserValue("params").(*types.BookRoomParams)
 
@@ -85,4 +68,47 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(res)
+}
+
+func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
+	user, ok := c.Context().UserValue("user").(*types.User)
+	if !ok {
+		return errors.New("something went wrong")
+	}
+
+	filter := bson.M{
+		"userID": user.ID,
+	}
+	bookings, err := h.BookingStore.Get(c.Context(), filter)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(bookings)
+}
+
+func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
+	user, ok := c.Context().UserValue("user").(*types.User)
+	if !ok {
+		return errors.New("something went wrong")
+	}
+
+	booking, err := h.BookingStore.GetByID(c.Context(), c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	if booking.UserID != user.ID {
+		return c.Status(http.StatusForbidden).JSON("unauthorized")
+	}
+
+	if err := h.BookingStore.UpdateByID(
+		c.Context(), c.Params("id"), &types.UpdateBookingParams{Canceled: true},
+	); err != nil {
+		return err
+	}
+
+	return c.JSON(map[string]string{
+		"message": "booking canceled successfully!",
+	})
 }

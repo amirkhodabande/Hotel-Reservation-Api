@@ -14,6 +14,8 @@ const bookingColl = "bookings"
 type BookingStore interface {
 	Get(ctx context.Context, filter bson.M) ([]*types.Booking, error)
 	Insert(ctx context.Context, booking *types.Booking) (*types.Booking, error)
+	GetByID(ctx context.Context, id string) (*types.Booking, error)
+	UpdateByID(ctx context.Context, id string, params *types.UpdateBookingParams) error
 }
 
 type MongoBookingStore struct {
@@ -52,4 +54,32 @@ func (s *MongoBookingStore) Insert(ctx context.Context, booking *types.Booking) 
 
 	booking.ID = res.InsertedID.(primitive.ObjectID)
 	return booking, nil
+}
+
+func (s *MongoBookingStore) GetByID(ctx context.Context, id string) (*types.Booking, error) {
+	bid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var booking types.Booking
+
+	if err := s.coll.FindOne(ctx, bson.M{"_id": bid}).Decode(&booking); err != nil {
+		return nil, err
+	}
+
+	return &booking, nil
+}
+
+func (s *MongoBookingStore) UpdateByID(ctx context.Context, id string, params *types.UpdateBookingParams) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	if _, err := s.coll.UpdateByID(ctx, oid, bson.M{"$set": params}); err != nil {
+		return err
+	}
+
+	return nil
 }

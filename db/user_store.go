@@ -91,7 +91,7 @@ func (s *MongoUserStore) UpdateByID(ctx context.Context, id string, params *type
 		return err
 	}
 
-	if _, err = s.coll.UpdateByID(ctx, oid, bson.D{{"$set", params}}); err != nil {
+	if _, err = s.coll.UpdateByID(ctx, oid, bson.M{"$set": params}); err != nil {
 		return err
 	}
 
