@@ -22,8 +22,8 @@ type CreateUserParams struct {
 }
 
 type UpdateUserParams struct {
-	FirstName string `bson:"firstName" json:"first_name" validate:"required,min=2"`
-	LastName  string `bson:"lastName" json:"last_name" validate:"required,min=2"`
+	FirstName string `bson:"firstName,omitempty" json:"first_name,omitempty" validate:"required,min=2"`
+	LastName  string `bson:"lastName,omitempty" json:"last_name,omitempty" validate:"required,min=2"`
 }
 
 type User struct {
