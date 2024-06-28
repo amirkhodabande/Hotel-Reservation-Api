@@ -35,13 +35,10 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	}
 
 	filter := bson.M{
-		"roomID": rid,
-		"from": bson.M{
-			"$gte": params.From,
-		},
-		"till": bson.M{
-			"$lte": params.Till,
-		},
+		"roomID":   rid,
+		"canceled": bson.M{"$ne": true},
+		"from":     bson.M{"$gte": params.From},
+		"till":     bson.M{"$lte": params.Till},
 	}
 	bookings, err := h.BookingStore.Get(c.Context(), filter)
 	if err != nil {
