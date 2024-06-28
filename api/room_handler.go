@@ -18,8 +18,7 @@ func NewRoomHandler(store *db.Store) *RoomHandler {
 }
 
 func (h *RoomHandler) HandleGetRooms(c *fiber.Ctx) error {
-	id := c.Params("id")
-	hid, err := primitive.ObjectIDFromHex(id)
+	hid, err := primitive.ObjectIDFromHex(c.Params("id"))
 	if err != nil {
 		return err
 	}
