@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,30 +8,16 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hotel.com/types"
 )
 
 func TestGetRoomsList(t *testing.T) {
-	app, tdb := setup(t)
+	app, _ := setup(t)
 
-	user := &types.User{
-		Email:             "test@gmail.com",
-		FirstName:         "test",
-		LastName:          "Ltest",
-		EncryptedPassword: "testEncrypted",
-	}
-	tdb.UserStore.Insert(context.Background(), user)
-	hotel, _ := tdb.HotelStore.Insert(context.Background(), &types.Hotel{
-		Name:     "TestHotel",
-		Location: "Iran",
-		Rating:   3,
-		Rooms:    []primitive.ObjectID{},
-	})
-	room, _ := tdb.RoomStore.Insert(context.Background(), &types.Room{
-		Type:    types.DoubleRoomType,
-		Price:   900,
-		HotelID: hotel.ID,
+	user := factory.CreateUser(map[string]any{})
+	hotel := factory.CreateHotel(map[string]any{})
+	room := factory.CreateRoom(map[string]any{
+		"hotel_id": hotel.ID,
 	})
 
 	req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/hotels/%s/rooms", hotel.ID.Hex()), nil)

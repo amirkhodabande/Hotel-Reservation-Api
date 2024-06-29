@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io"
 	"net/http/httptest"
@@ -13,22 +12,12 @@ import (
 )
 
 func TestCanLoginSuccessfully(t *testing.T) {
-	app, tdb := setup(t)
+	app, _ := setup(t)
 
-	user, _ := types.NewUserFromParams(&types.CreateUserParams{
-		Email:     "test1@gmail.com",
-		FirstName: "test1",
-		LastName:  "Ltest1",
-		Password:  "password",
+	user := factory.CreateUser(map[string]any{})
+	factory.CreateUser(map[string]any{
+		"email": "test2@gmail.com",
 	})
-	anotherUser, _ := types.NewUserFromParams(&types.CreateUserParams{
-		Email:     "test2@gmail.com",
-		FirstName: "test2",
-		LastName:  "Ltest2",
-		Password:  "password2",
-	})
-	tdb.UserStore.Insert(context.Background(), user)
-	tdb.UserStore.Insert(context.Background(), anotherUser)
 
 	loginParams, _ := json.Marshal(types.LoginParams{
 		Email:    "test1@gmail.com",
@@ -53,15 +42,9 @@ func TestCanLoginSuccessfully(t *testing.T) {
 }
 
 func TestCannotLoginWithWrongCredentials(t *testing.T) {
-	app, tdb := setup(t)
+	app, _ := setup(t)
 
-	user, _ := types.NewUserFromParams(&types.CreateUserParams{
-		Email:     "test1@gmail.com",
-		FirstName: "test1",
-		LastName:  "Ltest1",
-		Password:  "password",
-	})
-	tdb.UserStore.Insert(context.Background(), user)
+	factory.CreateUser(map[string]any{})
 
 	loginParams, _ := json.Marshal(types.LoginParams{
 		Email:    "wrong@gmail.com",
@@ -88,24 +71,24 @@ func TestLoginValidation(t *testing.T) {
 
 	tests := []struct {
 		description string
-		params      types.CreateUserParams
+		params      types.LoginParams
 	}{
 		{
 			description: "email is required",
-			params: types.CreateUserParams{
+			params: types.LoginParams{
 				Password: "password",
 			},
 		},
 		{
 			description: "email should be valid",
-			params: types.CreateUserParams{
+			params: types.LoginParams{
 				Email:    "invalid",
 				Password: "password",
 			},
 		},
 		{
 			description: "password is required",
-			params: types.CreateUserParams{
+			params: types.LoginParams{
 				Email: "test@gmail.com",
 			},
 		},

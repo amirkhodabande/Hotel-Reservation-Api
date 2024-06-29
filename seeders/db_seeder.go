@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/db"
+	"hotel.com/db/factories"
 	"hotel.com/types"
 )
 
@@ -21,66 +21,42 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ctx := context.Background()
+	database := db.InitDatabase(client, db.DBname)
 
-	seedUsersTable(ctx)
-	seedHotelsTable(ctx)
+	factories := factories.New(database)
+
+	seedUsersTable(factories)
+	seedHotelsTable(factories)
 }
 
-func seedUsersTable(ctx context.Context) {
+func seedUsersTable(f *factories.Factory) {
 	fmt.Println("Seeding users table...")
 
-	userStore := db.NewMongoUserStore(client, db.DBname)
-
-	user, _ := types.NewUserFromParams(&types.CreateUserParams{
-		Email:     "test1@gmail.com",
-		FirstName: "test1",
-		LastName:  "Ltest1",
-		Password:  "password",
+	f.CreateUser(map[string]any{
+		"email": "test1@gmail.com",
 	})
-	anotherUser, _ := types.NewUserFromParams(&types.CreateUserParams{
-		Email:     "test2@gmail.com",
-		FirstName: "test2",
-		LastName:  "Ltest2",
-		Password:  "password",
+	f.CreateUser(map[string]any{
+		"email": "test2@gmail.com",
 	})
-
-	userStore.Insert(ctx, user)
-	userStore.Insert(ctx, anotherUser)
 
 	fmt.Println("users Done!")
 }
 
-func seedHotelsTable(ctx context.Context) {
+func seedHotelsTable(f *factories.Factory) {
 	fmt.Println("Seeding hotels table...")
 
-	hotelStore := db.NewMongoHotelStore(client, db.DBname)
+	hotel := f.CreateHotel(map[string]any{})
 
-	hotel, err := hotelStore.Insert(ctx, &types.Hotel{
-		Name:     "TestHotel",
-		Location: "Iran",
-		Rating:   3,
-		Rooms:    []primitive.ObjectID{},
+	f.CreateRoom(map[string]any{
+		"type":     types.SingleRoomType,
+		"price":    70,
+		"hotel_id": hotel.ID,
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	roomStore := db.NewMongoRoomStore(client, db.DBname, hotelStore)
-
-	roomStore.Insert(ctx, &types.Room{
-		Type:    types.SingleRoomType,
-		Price:   70,
-		HotelID: hotel.ID,
+	f.CreateRoom(map[string]any{
+		"type":     types.DeluxeRoomType,
+		"price":    500,
+		"hotel_id": hotel.ID,
 	})
-	roomStore.Insert(ctx, &types.Room{
-		Type:    types.DeluxeRoomType,
-		Price:   120,
-		HotelID: hotel.ID,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	fmt.Println("hotels Done!")
 }

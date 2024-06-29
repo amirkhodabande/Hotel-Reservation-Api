@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/app"
 	"hotel.com/db"
+	"hotel.com/db/factories"
 	"hotel.com/types"
 )
 
@@ -19,6 +20,8 @@ const (
 	dburi  = "mongodb://localhost:27017"
 	dbname = "test-hotel-reservation"
 )
+
+var factory *factories.Factory
 
 func setup(*testing.T) (*fiber.App, *db.Store) {
 	err := godotenv.Load("../.env")
@@ -38,6 +41,8 @@ func setup(*testing.T) (*fiber.App, *db.Store) {
 	tdb := db.InitDatabase(client, dbname)
 
 	app := app.New(tdb)
+
+	factory = factories.New(tdb)
 
 	return app, tdb
 }
