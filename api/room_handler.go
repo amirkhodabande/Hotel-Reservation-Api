@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"hotel.com/api/custom_errors"
 	"hotel.com/db"
 )
 
@@ -20,12 +21,12 @@ func NewRoomHandler(store *db.Store) *RoomHandler {
 func (h *RoomHandler) HandleGetRooms(c *fiber.Ctx) error {
 	hid, err := primitive.ObjectIDFromHex(c.Params("id"))
 	if err != nil {
-		return err
+		return custom_errors.NotFound()
 	}
 
 	rooms, err := h.RoomStore.Get(c.Context(), bson.M{"hotelID": hid})
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(rooms)

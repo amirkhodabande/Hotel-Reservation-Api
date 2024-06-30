@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
+	"hotel.com/api/custom_errors"
 	"hotel.com/db"
 	"hotel.com/types"
 )
@@ -22,7 +23,7 @@ func NewUserHandler(store *db.Store) *UserHandler {
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 	users, err := h.UserStore.Get(c.Context())
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(users)
@@ -32,15 +33,14 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 	params := c.Context().UserValue("params").(*types.CreateUserParams)
 
 	user, err := types.NewUserFromParams(params)
-
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	insertedUser, err := h.UserStore.Insert(c.Context(), user)
 
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(insertedUser)
@@ -52,10 +52,10 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 	user, err := h.UserStore.GetByID(c.Context(), id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return c.Status(404).JSON(map[string]string{"error": "not found"})
+			return custom_errors.NotFound()
 		}
 
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(user)
@@ -65,7 +65,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 	params := c.Context().UserValue("params").(*types.UpdateUserParams)
 
 	if err := h.UserStore.UpdateByID(c.Context(), c.Params("id"), params); err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(map[string]string{"message": "user updated successfully"})
@@ -76,7 +76,7 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 	err := h.UserStore.DeleteByID(c.Context(), id)
 
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(map[string]string{"message": "user deleted successfully"})

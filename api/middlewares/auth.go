@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"hotel.com/api/custom_errors"
 	"hotel.com/db"
 )
 
@@ -15,25 +16,25 @@ func Authenticate(db *db.Store) fiber.Handler {
 		token, ok := ctx.GetReqHeaders()["Authorization"]
 
 		if !ok {
-			return fmt.Errorf("unauthorized")
+			return custom_errors.Unauthorized()
 		}
 
 		claims, err := validateToken(token[0])
 		if err != nil {
-			return err
+			return custom_errors.Unauthorized()
 		}
 
 		expires := claims["expires"].(string)
 
 		if time.Now().String() > expires {
-			return fmt.Errorf("unauthorized")
+			return custom_errors.Unauthorized()
 		}
 
 		userID := claims["id"].(string)
 		user, err := db.UserStore.GetByID(ctx.Context(), userID)
 
 		if err != nil {
-			return fmt.Errorf("unauthorized")
+			return custom_errors.Unauthorized()
 		}
 
 		ctx.Context().SetUserValue("user", user)

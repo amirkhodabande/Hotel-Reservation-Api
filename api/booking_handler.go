@@ -1,12 +1,12 @@
 package api
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"hotel.com/api/custom_errors"
 	"hotel.com/db"
 	"hotel.com/types"
 )
@@ -26,12 +26,12 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 
 	rid, err := primitive.ObjectIDFromHex(c.Params("id"))
 	if err != nil {
-		return err
+		return custom_errors.NotFound()
 	}
 
 	user, ok := c.Context().UserValue("user").(*types.User)
 	if !ok {
-		return errors.New("something went wrong")
+		return custom_errors.Internal()
 	}
 
 	filter := bson.M{
@@ -42,13 +42,14 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 	}
 	bookings, err := h.BookingStore.Get(c.Context(), filter)
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	if len(bookings) > 0 {
-		return c.Status(http.StatusBadRequest).JSON(map[string]any{
-			"error": "This room is already booked at the chosen time",
-		})
+		return custom_errors.NewErr(
+			http.StatusBadRequest,
+			"This room is already booked at the chosen time",
+		)
 	}
 
 	booking := &types.Booking{
@@ -61,7 +62,7 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 
 	res, err := h.BookingStore.Insert(c.Context(), booking)
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(res)
@@ -70,7 +71,7 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	user, ok := c.Context().UserValue("user").(*types.User)
 	if !ok {
-		return errors.New("something went wrong")
+		return custom_errors.Internal()
 	}
 
 	filter := bson.M{
@@ -78,7 +79,7 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 	}
 	bookings, err := h.BookingStore.Get(c.Context(), filter)
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(bookings)
@@ -87,22 +88,22 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 	user, ok := c.Context().UserValue("user").(*types.User)
 	if !ok {
-		return errors.New("something went wrong")
+		return custom_errors.Internal()
 	}
 
 	booking, err := h.BookingStore.GetByID(c.Context(), c.Params("id"))
 	if err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	if booking.UserID != user.ID {
-		return c.Status(http.StatusForbidden).JSON("unauthorized")
+		return custom_errors.Forbidden()
 	}
 
 	if err := h.BookingStore.UpdateByID(
 		c.Context(), c.Params("id"), &types.UpdateBookingParams{Canceled: true},
 	); err != nil {
-		return err
+		return custom_errors.Internal()
 	}
 
 	return c.JSON(map[string]string{

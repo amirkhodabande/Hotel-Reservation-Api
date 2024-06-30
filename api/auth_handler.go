@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
+	"hotel.com/api/custom_errors"
 	"hotel.com/db"
 	"hotel.com/types"
 )
@@ -26,9 +27,9 @@ func (h *AuthHandler) HandleLogin(c *fiber.Ctx) error {
 	user, err := h.UserStore.GetByEmail(c.Context(), params.Email)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return fmt.Errorf("invalid credentials")
+			return custom_errors.InvalidCredentials()
 		}
-		return err
+		return custom_errors.Internal()
 	}
 
 	if !types.IsValidPassword(user.EncryptedPassword, params.Password) {
