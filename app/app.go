@@ -1,6 +1,8 @@
 package app
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
 	"hotel.com/api/custom_errors"
 	"hotel.com/db"
@@ -13,7 +15,9 @@ var app = fiber.New(fiber.Config{
 			return ctx.Status(customError.Status()).JSON(customError)
 		}
 
-		return ctx.JSON(map[string]string{"error": err.Error()})
+		return ctx.Status(http.StatusInternalServerError).JSON(custom_errors.Error{
+			Msg: "something went wrong",
+		})
 	},
 })
 
