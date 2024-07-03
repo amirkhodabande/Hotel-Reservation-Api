@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
 	"hotel.com/types"
 )
 
@@ -33,7 +32,9 @@ func TestGetBookedRoomsList(t *testing.T) {
 	}
 
 	encodedRes, _ := io.ReadAll(res.Body)
-	bookings, _ := tdb.BookingStore.Get(context.Background(), bson.M{"userID": user.ID})
+
+	filter := &types.BookingQueryParams{UserID: user.ID}
+	bookings, _ := tdb.BookingStore.Get(context.Background(), filter)
 	exceptedRes, _ := json.Marshal(bookings)
 
 	assert.Equal(t, 200, res.StatusCode)
@@ -64,7 +65,8 @@ func TestBookingRoom(t *testing.T) {
 		t.Error(err)
 	}
 
-	bookings, _ := tdb.BookingStore.Get(context.Background(), bson.M{"roomID": room.ID})
+	filter := &types.BookingQueryParams{UserID: user.ID}
+	bookings, _ := tdb.BookingStore.Get(context.Background(), filter)
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.Equal(t, bookings[0].UserID, user.ID)
