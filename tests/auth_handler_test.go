@@ -34,11 +34,11 @@ func TestCanLoginSuccessfully(t *testing.T) {
 	}
 
 	encodedRes, _ := io.ReadAll(res.Body)
-	var loginRes map[string]types.User
+	var loginRes map[string]map[string]types.User
 	json.Unmarshal(encodedRes, &loginRes)
 
 	assert.Equal(t, 200, res.StatusCode)
-	assert.Equal(t, user.Email, loginRes["user"].Email)
+	assert.Equal(t, user.Email, loginRes["data"]["user"].Email)
 }
 
 func TestCannotLoginWithWrongCredentials(t *testing.T) {

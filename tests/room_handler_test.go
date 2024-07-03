@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"hotel.com/api"
 	"hotel.com/types"
 )
 
@@ -30,7 +31,7 @@ func TestGetRoomsList(t *testing.T) {
 	}
 
 	encodedRes, _ := io.ReadAll(res.Body)
-	exceptedRes, _ := json.Marshal([]types.Room{*room})
+	exceptedRes, _ := json.Marshal(api.SuccessResponse([]types.Room{*room}))
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.JSONEq(t, string(exceptedRes), string(encodedRes))

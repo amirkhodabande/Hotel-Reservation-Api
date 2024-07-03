@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"hotel.com/api"
 	"hotel.com/types"
 )
 
@@ -35,7 +36,9 @@ func TestGetBookedRoomsList(t *testing.T) {
 
 	filter := &types.BookingQueryParams{UserID: user.ID}
 	bookings, _ := tdb.BookingStore.Get(context.Background(), filter)
-	exceptedRes, _ := json.Marshal(bookings)
+	exceptedRes, _ := json.Marshal(
+		api.SuccessResponse(bookings).WithPagination(int64(len(bookings)), filter.GetPage()),
+	)
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.JSONEq(t, string(exceptedRes), string(encodedRes))
@@ -68,7 +71,7 @@ func TestBookingRoom(t *testing.T) {
 	filter := &types.BookingQueryParams{UserID: user.ID}
 	bookings, _ := tdb.BookingStore.Get(context.Background(), filter)
 
-	assert.Equal(t, 200, res.StatusCode)
+	assert.Equal(t, 201, res.StatusCode)
 	assert.Equal(t, bookings[0].UserID, user.ID)
 	assert.Equal(t, bookings[0].RoomID, room.ID)
 }

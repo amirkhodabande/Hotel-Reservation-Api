@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"hotel.com/api"
 	"hotel.com/types"
 )
 
@@ -41,7 +42,7 @@ func TestGetUserList(t *testing.T) {
 	}
 
 	encodedRes, _ := io.ReadAll(res.Body)
-	exceptedRes, _ := json.Marshal([]types.User{*user, *anotherUser})
+	exceptedRes, _ := json.Marshal(api.SuccessResponse([]types.User{*user, *anotherUser}))
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.JSONEq(t, string(exceptedRes), string(encodedRes))
@@ -66,14 +67,14 @@ func TestCreateUser(t *testing.T) {
 		t.Error(err)
 	}
 
-	var user types.User
-	json.NewDecoder(res.Body).Decode(&user)
+	var response map[string]types.User
+	json.NewDecoder(res.Body).Decode(&response)
 
 	assert.Equal(t, 201, res.StatusCode)
-	assert.NotEmpty(t, user.ID)
-	assert.Equal(t, params.FirstName, user.FirstName)
-	assert.Equal(t, params.LastName, user.LastName)
-	assert.Empty(t, user.EncryptedPassword)
+	assert.NotEmpty(t, response["data"].ID)
+	assert.Equal(t, params.FirstName, response["data"].FirstName)
+	assert.Equal(t, params.LastName, response["data"].LastName)
+	assert.Empty(t, response["data"].EncryptedPassword)
 }
 
 func TestCreateUserValidation(t *testing.T) {
@@ -151,7 +152,7 @@ func TestGetUserBy(t *testing.T) {
 	}
 
 	encodedRes, _ := io.ReadAll(res.Body)
-	exceptedRes, _ := json.Marshal(user)
+	exceptedRes, _ := json.Marshal(api.SuccessResponse(user))
 
 	assert.Equal(t, 200, res.StatusCode)
 	assert.JSONEq(t, string(exceptedRes), string(encodedRes))
