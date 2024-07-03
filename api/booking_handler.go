@@ -74,14 +74,18 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	filter := &types.BookingQueryParams{UserID: user.ID}
+	params := c.Context().UserValue("query-params").(*types.BookingQueryParams)
 
-	bookings, err := h.BookingStore.Get(c.Context(), filter)
+	params.UserID = user.ID
+
+	bookings, err := h.BookingStore.Get(c.Context(), params)
 	if err != nil {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(bookings)
+	return c.JSON(
+		SuccessResponse(bookings).WithPagination(int64(len(bookings)), params.GetPage()),
+	)
 }
 
 func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {

@@ -25,5 +25,7 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(SuccessResponse(hotels))
+	return c.JSON(
+		SuccessResponse(hotels).WithPagination(int64(len(hotels)), params.GetPage()),
+	)
 }

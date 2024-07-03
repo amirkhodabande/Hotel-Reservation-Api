@@ -39,7 +39,7 @@ func RegisterRoutes(database *db.Store, app *fiber.App) {
 
 	// booking routes
 	bookingRoutes := apiV1.Group("/bookings", middlewares.Authenticate(database))
-	bookingRoutes.Get("/", bookingHandler.HandleGetBookings)
+	bookingRoutes.Get("/", validators.ValidateBookingQueryParams, bookingHandler.HandleGetBookings)
 	bookingRoutes.Post("/:id", validators.ValidateBookingRoom, bookingHandler.HandleBookRoom)
 	bookingRoutes.Delete("/:id", bookingHandler.HandleCancelBooking)
 }
