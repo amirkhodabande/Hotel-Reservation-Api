@@ -18,13 +18,9 @@ func NewHotelHandler(store *db.Store) *HotelHandler {
 }
 
 func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
-	// TODO: validate this and use params to filter
-	var qparams types.HotelQueryParams
-	if err := c.QueryParser(&qparams); err != nil {
-		return custom_errors.Validation()
-	}
+	params := c.Context().UserValue("query-params").(*types.HotelQueryParams)
 
-	hotels, err := h.HotelStore.Get(c.Context(), nil)
+	hotels, err := h.HotelStore.Get(c.Context(), params)
 	if err != nil {
 		return custom_errors.Internal()
 	}

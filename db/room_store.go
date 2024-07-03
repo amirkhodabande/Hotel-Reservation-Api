@@ -12,7 +12,7 @@ import (
 const roomColl = "rooms"
 
 type RoomStore interface {
-	Get(ctx context.Context, filter bson.M) ([]*types.Room, error)
+	GetByHotelID(ctx context.Context, hotelID string) ([]*types.Room, error)
 	Insert(ctx context.Context, user *types.Room) (*types.Room, error)
 }
 
@@ -31,8 +31,13 @@ func NewMongoRoomStore(client *mongo.Client, dbname string, hotelStore *MongoHot
 	}
 }
 
-func (s *MongoRoomStore) Get(ctx context.Context, filter bson.M) ([]*types.Room, error) {
-	cur, err := s.coll.Find(ctx, filter)
+func (s *MongoRoomStore) GetByHotelID(ctx context.Context, hotelID string) ([]*types.Room, error) {
+	hid, err := primitive.ObjectIDFromHex(hotelID)
+	if err != nil {
+		return nil, err
+	}
+
+	cur, err := s.coll.Find(ctx, bson.M{"hotelID": hid})
 	if err != nil {
 		return nil, err
 	}

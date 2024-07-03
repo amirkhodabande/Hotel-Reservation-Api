@@ -12,7 +12,7 @@ import (
 const bookingColl = "bookings"
 
 type BookingStore interface {
-	Get(ctx context.Context, filter bson.M) ([]*types.Booking, error)
+	Get(ctx context.Context, filter *types.BookingQueryParams) ([]*types.Booking, error)
 	Insert(ctx context.Context, booking *types.Booking) (*types.Booking, error)
 	GetByID(ctx context.Context, id string) (*types.Booking, error)
 	UpdateByID(ctx context.Context, id string, params *types.UpdateBookingParams) error
@@ -30,8 +30,27 @@ func NewMongoBookingStore(client *mongo.Client, dbname string) *MongoBookingStor
 	}
 }
 
-func (s *MongoBookingStore) Get(ctx context.Context, filter bson.M) ([]*types.Booking, error) {
-	cur, err := s.coll.Find(ctx, filter)
+func (s *MongoBookingStore) Get(ctx context.Context, filter *types.BookingQueryParams) ([]*types.Booking, error) {
+	query := bson.M{}
+
+	if !filter.RoomID.IsZero() {
+		query["roomID"] = filter.RoomID
+	}
+	if !filter.UserID.IsZero() {
+		query["userID"] = filter.UserID
+	}
+	if filter.NumPersons != 0 {
+		query["numPersons"] = filter.NumPersons
+	}
+	if !filter.From.IsZero() {
+		query["from"] = bson.M{"$gte": filter.From}
+	}
+	if !filter.Till.IsZero() {
+		query["till"] = bson.M{"$lte": filter.Till}
+	}
+	query["canceled"] = filter.Canceled
+
+	cur, err := s.coll.Find(ctx, query)
 	if err != nil {
 		return nil, err
 	}

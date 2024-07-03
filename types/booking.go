@@ -6,6 +6,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type BookingQueryParams struct {
+	RoomID     primitive.ObjectID `bson:"roomID,omitempty"`
+	UserID     primitive.ObjectID `bson:"userID,omitempty"`
+	NumPersons int                `bson:"numPersons,omitempty" validate:"omitempty,numeric,min=0"`
+	From       time.Time          `bson:"from,omitempty"`
+	Till       time.Time          `bson:"till,omitempty"`
+	Canceled   bool               `bson:"canceled,omitempty"`
+}
+
 type BookRoomParams struct {
 	From       time.Time `bson:"from" json:"from" validate:"required,valid_date"`
 	Till       time.Time `bson:"till" json:"till" validate:"required,valid_date"`

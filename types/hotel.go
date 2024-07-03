@@ -1,10 +1,12 @@
 package types
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type HotelQueryParams struct {
-	Name   bool `json:"rooms" validate:"nullable"`
-	Rating int  `json:"ratings" validate:"nullable"`
+	Name   string `bson:"name,omitempty" validate:"omitempty,min=2"`
+	Rating int    `bson:"rating,omitempty" validate:"omitempty,numeric,min=0"`
 }
 
 type CreateHotelParams struct {

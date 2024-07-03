@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"hotel.com/api/custom_errors"
 	"hotel.com/db"
@@ -34,12 +33,13 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	filter := bson.M{
-		"roomID":   rid,
-		"canceled": bson.M{"$ne": true},
-		"from":     bson.M{"$gte": params.From},
-		"till":     bson.M{"$lte": params.Till},
+	filter := &types.BookingQueryParams{
+		RoomID:   rid,
+		Canceled: false,
+		From:     params.From,
+		Till:     params.Till,
 	}
+
 	bookings, err := h.BookingStore.Get(c.Context(), filter)
 	if err != nil {
 		return custom_errors.Internal()
@@ -74,9 +74,8 @@ func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	filter := bson.M{
-		"userID": user.ID,
-	}
+	filter := &types.BookingQueryParams{UserID: user.ID}
+
 	bookings, err := h.BookingStore.Get(c.Context(), filter)
 	if err != nil {
 		return custom_errors.Internal()

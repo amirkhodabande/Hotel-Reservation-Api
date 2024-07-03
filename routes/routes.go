@@ -32,7 +32,7 @@ func RegisterRoutes(database *db.Store, app *fiber.App) {
 
 	// hotel routes
 	hotelRoutes := apiV1.Group("hotels", middlewares.Authenticate(database))
-	hotelRoutes.Get("/", hotelHandler.HandleGetHotels)
+	hotelRoutes.Get("/", validators.ValidateHotelQueryParams, hotelHandler.HandleGetHotels)
 
 	// room routes
 	hotelRoutes.Get("/:id/rooms", roomHandler.HandleGetRooms)

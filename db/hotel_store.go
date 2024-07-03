@@ -12,7 +12,7 @@ import (
 const hotelColl = "hotels"
 
 type HotelStore interface {
-	Get(ctx context.Context, filter bson.M) ([]*types.Hotel, error)
+	Get(ctx context.Context, queryParams *types.HotelQueryParams) ([]*types.Hotel, error)
 	Insert(ctx context.Context, hotel *types.Hotel) (*types.Hotel, error)
 	GetByID(ctx context.Context, id string) (*types.Hotel, error)
 	UpdateByID(ctx context.Context, id string, params types.UpdateHotelParams) error
@@ -30,8 +30,8 @@ func NewMongoHotelStore(client *mongo.Client, dbname string) *MongoHotelStore {
 	}
 }
 
-func (s *MongoHotelStore) Get(ctx context.Context, filter bson.M) ([]*types.Hotel, error) {
-	cur, err := s.coll.Find(ctx, filter)
+func (s *MongoHotelStore) Get(ctx context.Context, queryParams *types.HotelQueryParams) ([]*types.Hotel, error) {
+	cur, err := s.coll.Find(ctx, queryParams)
 
 	if err != nil {
 		return nil, err
