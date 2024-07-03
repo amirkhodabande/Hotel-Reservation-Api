@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,29 +17,24 @@ import (
 	"hotel.com/types"
 )
 
-const (
-	dburi  = "mongodb://localhost:27017"
-	dbname = "test-hotel-reservation"
-)
-
 var factory *factories.Factory
 
 func setup(*testing.T) (*fiber.App, *db.Store) {
-	err := godotenv.Load("../.env")
+	err := godotenv.Load("../.env.testing")
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 
 	ctx := context.Background()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dburi))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("DB_URI")))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	client.Database(dbname).Drop(ctx)
+	client.Database(os.Getenv("DB_NAME")).Drop(ctx)
 
-	tdb := db.InitDatabase(client, dbname)
+	tdb := db.InitDatabase(client, os.Getenv("DB_NAME"))
 
 	app := app.New(tdb)
 

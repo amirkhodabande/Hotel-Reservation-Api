@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,14 +20,14 @@ func main() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(db.DBuri))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(os.Getenv("DB_URI")))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	database := db.InitDatabase(client, db.DBname)
+	database := db.InitDatabase(client, os.Getenv("DB_NAME"))
 
-	address := flag.String("serverPort", ":5000", "")
+	address := flag.String("serverPort", os.Getenv("APP_PORT"), "")
 	flag.Parse()
 
 	app := app.New(database)

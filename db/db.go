@@ -5,11 +5,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const (
-	DBuri  string = "mongodb://localhost:27017"
-	DBname string = "hotel-reservation"
-)
-
 type Store struct {
 	UserStore
 	HotelStore
