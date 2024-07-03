@@ -7,6 +7,7 @@ import (
 type HotelQueryParams struct {
 	Name   string `bson:"name,omitempty" validate:"omitempty,min=2"`
 	Rating int    `bson:"rating,omitempty" validate:"omitempty,numeric,min=0"`
+	paginationQueryParam
 }
 
 type CreateHotelParams struct {

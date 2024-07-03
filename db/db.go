@@ -21,9 +21,9 @@ func InitDatabase(client *mongo.Client, dbName string) *Store {
 	hotelStore := NewMongoHotelStore(client, dbName)
 
 	return &Store{
-		UserStore:  NewMongoUserStore(client, dbName),
-		HotelStore: hotelStore,
-		RoomStore:  NewMongoRoomStore(client, dbName, hotelStore),
+		UserStore:    NewMongoUserStore(client, dbName),
+		HotelStore:   hotelStore,
+		RoomStore:    NewMongoRoomStore(client, dbName, hotelStore),
 		BookingStore: NewMongoBookingStore(client, dbName),
 	}
 }

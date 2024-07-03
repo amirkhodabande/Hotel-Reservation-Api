@@ -13,6 +13,7 @@ type BookingQueryParams struct {
 	From       time.Time          `bson:"from,omitempty"`
 	Till       time.Time          `bson:"till,omitempty"`
 	Canceled   bool               `bson:"canceled,omitempty"`
+	paginationQueryParam
 }
 
 type BookRoomParams struct {

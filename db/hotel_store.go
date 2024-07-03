@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/types"
 )
 
@@ -31,7 +32,11 @@ func NewMongoHotelStore(client *mongo.Client, dbname string) *MongoHotelStore {
 }
 
 func (s *MongoHotelStore) Get(ctx context.Context, queryParams *types.HotelQueryParams) ([]*types.Hotel, error) {
-	cur, err := s.coll.Find(ctx, queryParams)
+	opts := &options.FindOptions{}
+	opts.SetSkip((queryParams.GetPage() - 1) * queryParams.GetLimit())
+	opts.SetLimit(queryParams.GetLimit())
+
+	cur, err := s.coll.Find(ctx, queryParams, opts)
 
 	if err != nil {
 		return nil, err

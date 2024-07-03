@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/types"
 )
 
@@ -31,6 +32,10 @@ func NewMongoBookingStore(client *mongo.Client, dbname string) *MongoBookingStor
 }
 
 func (s *MongoBookingStore) Get(ctx context.Context, filter *types.BookingQueryParams) ([]*types.Booking, error) {
+	opts := &options.FindOptions{}
+	opts.SetSkip((filter.GetPage() - 1) * filter.GetLimit())
+	opts.SetLimit(filter.GetLimit())
+
 	query := bson.M{}
 
 	if !filter.RoomID.IsZero() {
@@ -50,7 +55,7 @@ func (s *MongoBookingStore) Get(ctx context.Context, filter *types.BookingQueryP
 	}
 	query["canceled"] = filter.Canceled
 
-	cur, err := s.coll.Find(ctx, query)
+	cur, err := s.coll.Find(ctx, query, opts)
 	if err != nil {
 		return nil, err
 	}
