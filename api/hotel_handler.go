@@ -25,5 +25,5 @@ func (h *HotelHandler) HandleGetHotels(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(hotels)
+	return c.JSON(SuccessResponse(hotels))
 }

@@ -65,7 +65,7 @@ func (h *BookingHandler) HandleBookRoom(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(res)
+	return c.Status(http.StatusCreated).JSON(SuccessResponse(res))
 }
 
 func (h *BookingHandler) HandleGetBookings(c *fiber.Ctx) error {
@@ -105,7 +105,5 @@ func (h *BookingHandler) HandleCancelBooking(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(map[string]string{
-		"message": "booking canceled successfully!",
-	})
+	return c.JSON(SuccessResponse(nil))
 }

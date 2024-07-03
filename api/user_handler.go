@@ -26,7 +26,7 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(users)
+	return c.JSON(SuccessResponse(users))
 }
 
 func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
@@ -43,7 +43,7 @@ func (h *UserHandler) HandleCreateUser(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(insertedUser)
+	return c.Status(fiber.StatusCreated).JSON(SuccessResponse(insertedUser))
 }
 
 func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
@@ -58,7 +58,7 @@ func (h *UserHandler) HandleGetUser(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(user)
+	return c.JSON(SuccessResponse(user))
 }
 
 func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
@@ -68,7 +68,7 @@ func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(map[string]string{"message": "user updated successfully"})
+	return c.JSON(SuccessResponse(nil))
 }
 
 func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
@@ -79,5 +79,5 @@ func (h *UserHandler) HandleDeleteUser(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(map[string]string{"message": "user deleted successfully"})
+	return c.JSON(SuccessResponse(nil))
 }

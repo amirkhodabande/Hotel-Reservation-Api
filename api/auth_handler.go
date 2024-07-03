@@ -38,8 +38,9 @@ func (h *AuthHandler) HandleLogin(c *fiber.Ctx) error {
 
 	tokenStr := user.CreateToken()
 
-	return c.JSON(map[string]any{
+	resp := SuccessResponse(map[string]any{
 		"user":  user,
 		"token": tokenStr,
 	})
+	return c.JSON(resp)
 }

@@ -22,5 +22,5 @@ func (h *RoomHandler) HandleGetRooms(c *fiber.Ctx) error {
 		return custom_errors.Internal()
 	}
 
-	return c.JSON(rooms)
+	return c.JSON(SuccessResponse(rooms))
 }
