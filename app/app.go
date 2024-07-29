@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"hotel.com/api/custom_errors"
+	"hotel.com/app/container"
 	"hotel.com/db"
 	"hotel.com/routes"
 )
@@ -21,10 +22,10 @@ var app = fiber.New(fiber.Config{
 	},
 })
 
-func New(database *db.Store) *fiber.App {
+func New(database *db.Store, services *container.Services) *fiber.App {
 	app := fiber.New(app.Config())
 
-	routes.RegisterRoutes(database, app)
+	routes.RegisterRoutes(database, services, app)
 
 	return app
 }

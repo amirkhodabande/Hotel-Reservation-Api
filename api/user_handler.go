@@ -6,21 +6,27 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 	"hotel.com/api/custom_errors"
+	"hotel.com/app/container"
 	"hotel.com/db"
 	"hotel.com/types"
 )
 
 type UserHandler struct {
 	*db.Store
+	*container.Services
 }
 
-func NewUserHandler(store *db.Store) *UserHandler {
+func NewUserHandler(store *db.Store, services *container.Services) *UserHandler {
 	return &UserHandler{
 		store,
+		services,
 	}
 }
 
 func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
+	// just testing the service
+	h.Services.JustTest("hi")
+
 	users, err := h.UserStore.Get(c.Context())
 	if err != nil {
 		return custom_errors.Internal()

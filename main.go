@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/app"
+	"hotel.com/app/container"
 	"hotel.com/db"
 )
 
@@ -30,7 +31,9 @@ func main() {
 	address := flag.String("serverPort", os.Getenv("APP_PORT"), "")
 	flag.Parse()
 
-	app := app.New(database)
+	services := container.Bind()
+
+	app := app.New(database, services)
 
 	app.Listen(*address)
 }

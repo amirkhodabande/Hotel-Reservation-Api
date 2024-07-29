@@ -5,12 +5,13 @@ import (
 	"hotel.com/api"
 	"hotel.com/api/middlewares"
 	"hotel.com/api/validators"
+	"hotel.com/app/container"
 	"hotel.com/db"
 )
 
-func RegisterRoutes(database *db.Store, app *fiber.App) {
+func RegisterRoutes(database *db.Store, services *container.Services, app *fiber.App) {
 	authHandler := api.NewAuthHandler(database)
-	userHandler := api.NewUserHandler(database)
+	userHandler := api.NewUserHandler(database, services)
 	hotelHandler := api.NewHotelHandler(database)
 	roomHandler := api.NewRoomHandler(database)
 	bookingHandler := api.NewBookingHandler(database)
