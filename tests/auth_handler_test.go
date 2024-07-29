@@ -12,7 +12,7 @@ import (
 )
 
 func TestCanLoginSuccessfully(t *testing.T) {
-	app, _ := setup(t)
+	app, _ := setup(t, services())
 
 	user := factory.CreateUser(map[string]any{})
 	factory.CreateUser(map[string]any{
@@ -42,7 +42,7 @@ func TestCanLoginSuccessfully(t *testing.T) {
 }
 
 func TestCannotLoginWithWrongCredentials(t *testing.T) {
-	app, _ := setup(t)
+	app, _ := setup(t, services())
 
 	factory.CreateUser(map[string]any{})
 
@@ -67,7 +67,7 @@ func TestCannotLoginWithWrongCredentials(t *testing.T) {
 }
 
 func TestLoginValidation(t *testing.T) {
-	app, _ := setup(t)
+	app, _ := setup(t, services())
 
 	tests := []struct {
 		description string

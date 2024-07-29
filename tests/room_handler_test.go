@@ -13,7 +13,7 @@ import (
 )
 
 func TestGetRoomsList(t *testing.T) {
-	app, _ := setup(t)
+	app, _ := setup(t, services())
 
 	user := factory.CreateUser(map[string]any{})
 	hotel := factory.CreateHotel(map[string]any{})

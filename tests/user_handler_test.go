@@ -11,11 +11,26 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"hotel.com/api"
+	"hotel.com/app/container"
 	"hotel.com/types"
 )
 
+var m mocked
+
+type mocked struct {
+}
+
+func (m *mocked) JustTest(value string) error {
+	fmt.Println("from the mocked implementation")
+	return nil
+}
+
 func TestGetUserList(t *testing.T) {
-	app, tdb := setup(t)
+	mockedServices := container.Services{
+		ExampleServicer: &m,
+	}
+
+	app, tdb := setup(t, &mockedServices)
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -49,7 +64,7 @@ func TestGetUserList(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	app, _ := setup(t)
+	app, _ := setup(t, services())
 
 	params := types.CreateUserParams{
 		Email:     "test@gmail.com",
@@ -78,7 +93,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateUserValidation(t *testing.T) {
-	app, _ := setup(t)
+	app, _ := setup(t, services())
 
 	tests := []struct {
 		description string
@@ -132,7 +147,7 @@ func TestCreateUserValidation(t *testing.T) {
 }
 
 func TestGetUserBy(t *testing.T) {
-	app, tdb := setup(t)
+	app, tdb := setup(t, services())
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -159,7 +174,7 @@ func TestGetUserBy(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	app, tdb := setup(t)
+	app, tdb := setup(t, services())
 
 	user := &types.User{
 		Email:             "test@gmail.com",
@@ -192,7 +207,7 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	app, tdb := setup(t)
+	app, tdb := setup(t, services())
 
 	user := &types.User{
 		Email:             "test@gmail.com",

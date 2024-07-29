@@ -16,7 +16,7 @@ import (
 )
 
 func TestGetBookedRoomsList(t *testing.T) {
-	app, tdb := setup(t)
+	app, tdb := setup(t, services())
 
 	user := factory.CreateUser(map[string]any{})
 	factory.CreateBooking(map[string]any{
@@ -45,7 +45,7 @@ func TestGetBookedRoomsList(t *testing.T) {
 }
 
 func TestBookingRoom(t *testing.T) {
-	app, tdb := setup(t)
+	app, tdb := setup(t, services())
 
 	user := factory.CreateUser(map[string]any{})
 	hotel := factory.CreateHotel(map[string]any{})
@@ -77,7 +77,7 @@ func TestBookingRoom(t *testing.T) {
 }
 
 func TestCancelBookedRoom(t *testing.T) {
-	app, tdb := setup(t)
+	app, tdb := setup(t, services())
 
 	user := factory.CreateUser(map[string]any{})
 	booking := factory.CreateBooking(map[string]any{

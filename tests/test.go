@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"hotel.com/app"
+	"hotel.com/app/container"
 	"hotel.com/db"
 	"hotel.com/db/factories"
 	"hotel.com/types"
@@ -19,7 +20,7 @@ import (
 
 var factory *factories.Factory
 
-func setup(*testing.T) (*fiber.App, *db.Store) {
+func setup(_ *testing.T, services *container.Services) (*fiber.App, *db.Store) {
 	err := godotenv.Load("../.env.testing")
 	if err != nil {
 		log.Fatalf("Error loading .env file")
@@ -36,7 +37,7 @@ func setup(*testing.T) (*fiber.App, *db.Store) {
 
 	tdb := db.InitDatabase(client, os.Getenv("DB_NAME"))
 
-	app := app.New(tdb)
+	app := app.New(tdb, services)
 
 	factory = factories.New(tdb)
 
@@ -46,4 +47,8 @@ func setup(*testing.T) (*fiber.App, *db.Store) {
 func loginAs(user *types.User, req *http.Request) {
 	token := user.CreateToken()
 	req.Header.Add("Authorization", token)
+}
+
+func services() *container.Services {
+	return container.Bind()
 }
